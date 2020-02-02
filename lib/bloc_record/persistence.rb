@@ -1,5 +1,5 @@
  require 'sqlite3'
- require 'bloc_record/schema'
+ require_relative 'schema'
 
  module Persistence
    def self.included(base)

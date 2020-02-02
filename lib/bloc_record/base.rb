@@ -1,8 +1,8 @@
- require 'bloc_record/utility'
- require 'bloc_record/schema'
- require 'bloc_record/persistence'
- require 'bloc_record/selection'
- require 'bloc_record/connection'
+ require_relative 'utility'
+ require_relative 'schema'
+ require_relative 'persistence'
+ require_relative 'selection'
+ require_relative 'connection'
 
  module BlocRecord
    class Base
