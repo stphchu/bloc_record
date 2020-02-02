@@ -135,7 +135,8 @@ module Selection
   end
 
 # PRIVATE
-private
+  private
+
   def init_object_from_row(row)
     if row
       data = Hash[columns.zip(row)]
