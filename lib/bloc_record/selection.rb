@@ -160,10 +160,16 @@ module Selection
 
 # order
   def order(*args)
-    if args.count > 1
-      order = args.join(",")
-    else
-      order = args.first.to_s
+    case args.first
+      when String
+        if args.count > 1
+          order = args.join(",")
+        end
+      when Symbol
+        order = args.first.to_s
+      when Hash
+        hash = BlocRecord::Utility.convert_keys(args.first)
+        order = hash.map {|key, value| "#{key}=#{BlocRecord::Utility.sql_strings(value)}"}.join(" and ")
     end
 
     rows = connection.execute <<-SQL
@@ -182,19 +188,27 @@ module Selection
         SQL
     else
       case args.first
-      when String
-        rows = connection.execute <<-SQL
-          SELECT * FROM #{table} #{BlocRecord::Utility.sql_strings(args.first)};
-          SQL
-      when Symbol
-        rows = connection.execute <<-SQL
-          SELECT * FROM #{table}
-          INNER JOIN #{args.first} ON #{args.first}.#{table}_id = #{table}.id
-          SQL
+        when String
+          rows = connection.execute <<-SQL
+            SELECT * FROM #{table} #{BlocRecord::Utility.sql_strings(args.first)};
+            SQL
+        when Symbol
+          rows = connection.execute <<-SQL
+            SELECT * FROM #{table}
+            INNER JOIN #{args.first} ON #{args.first}.#{table}_id = #{table}.id
+            SQL
+        when Hash
+          key = args.first.keys.first
+          value = args.first(key)
+          rows = connection.execute <<-SQL
+            SELECT * FROM #{table}
+            INNER JOIN #{key} ON #{key}.#{table}_id = #{table}.id
+            INNER JOIN #{value} ON #{value}.#{key}_id = #{key}.id
+            SQL
+        end
       end
+      rows_to_array(rows)
     end
-    rows_to_array(rows)
-  end
 
 # PRIVATE
   private
