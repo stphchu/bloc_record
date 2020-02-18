@@ -3,6 +3,7 @@
  require_relative 'persistence'
  require_relative 'selection'
  require_relative 'connection'
+ require_relative 'collection'
 
  module BlocRecord
    class Base
